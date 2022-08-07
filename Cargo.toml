@@ -8,5 +8,5 @@ edition = "2021"
 [dependencies]
 chrono = "0.4"
 walkdir = "2.3.2"
-diesel = { version = "1.4.4", features = ["sqlite"] }
 dotenv = "0.15.0"
+rusqlite = "0.28.0"
