@@ -1,3 +1,3 @@
-pub fn search() {
-    println!("Hello from search!")
+pub fn search(param: &String) {
+    println!("Searching for {}", param)
 }
