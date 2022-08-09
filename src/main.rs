@@ -1,9 +1,9 @@
-mod add;
+mod folders;
 mod init;
 mod search;
 mod update;
 
-use add::add_folder;
+use folders::{add_folder, remove_folder};
 use init::create_tables;
 use search::search;
 use std::env::args;
@@ -37,11 +37,17 @@ fn main() {
                 }
             }
             "add" => {
-                println!("The action is add");
                 if &parameter == "" {
                     println!("Please provide a dir to add.")
                 } else {
                     add_folder(&parameter);
+                }
+            }
+            "remove" => {
+                if &parameter == "" {
+                    println!("Please provide a dir to remove.")
+                } else {
+                    remove_folder(&parameter);
                 }
             }
             "update" => {
