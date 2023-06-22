@@ -32,8 +32,8 @@ pub fn update() {
 
 fn add_entry(conn: &Connection, entry: &FileOrDir, id: &i32) {
     match conn.execute(
-        "INSERT INTO results(name, path, folderId) VALUES (?1, ?2, ?3)",
-        params![entry.name, entry.path, id],
+        "INSERT INTO results(path, name, is_folder, size_bytes, accessed_time, modified_time, created_time, readonly, hidden, system, folder_size_bytes, num_files, num_subfolders, folderId) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)",
+        params![entry.path, entry.name, entry.is_dir, entry.size, entry.accessed, entry.modified, entry.created, entry.read_only, entry.hidden, entry.system, entry.folder_size, entry.num_files, entry.num_folders, id],
     ) {
         Ok(updated) => println!("Update successful! {}", updated),
         Err(err) => println!("Update Failed! {}", err),

@@ -16,6 +16,17 @@ pub fn create_tables() -> Result<()> {
              id INTEGER PRIMARY KEY,
              path TEXT,
              name TEXT,
+             is_folder NUMERIC,
+             size_bytes NUMERIC,
+             accessed_time DATETIME,
+             modified_time DATETIME,
+             created_time DATETIME,
+             readonly NUMERIC,
+             hidden NUMERIC,
+             system TEXT,
+             folder_size_bytes NUMERIC,
+             num_files NUMERIC,
+             num_subfolders NUMERIC,
              folderId INTEGER,
              CONSTRAINT fk_folders_to_index
                 FOREIGN KEY (folderId) 
@@ -24,18 +35,6 @@ pub fn create_tables() -> Result<()> {
          );",
         params![],
     )?;
-
-    // is_folder NUMERIC,
-    // size_bytes NUMERIC,
-    // accessed_time DATETIME,
-    // modified_time DATETIME,
-    // created_time DATETIME,
-    // readonly NUMERIC,
-    // hidden NUMERIC,
-    // system TEXT,
-    // folder_size_bytes NUMERIC,
-    // num_files NUMERIC,
-    // num_subfolders NUMERIC
 
     conn.close().ok();
 
