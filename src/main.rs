@@ -1,13 +1,11 @@
-mod folders;
+mod index;
 mod init;
 mod search;
-mod update;
 
-use folders::{add_folder, remove_folder};
+use index::{add_folder, ls_folders, remove_folder, update};
 use init::create_tables;
 use search::search;
 use std::env::args;
-use update::update;
 
 fn main() {
     // Create database and tables if they don't exist
@@ -42,6 +40,9 @@ fn main() {
                 } else {
                     add_folder(&parameter);
                 }
+            }
+            "ls" => {
+                ls_folders();
             }
             "remove" => {
                 if &parameter == "" {
