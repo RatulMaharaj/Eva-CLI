@@ -2,8 +2,6 @@
 name: Release Eva
 
 on:
-  push:
-    branches: ["main"]
   release:
     types: [created]
 
