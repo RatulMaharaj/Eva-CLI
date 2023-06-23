@@ -1,8 +1,7 @@
-mod indexing;
-use std::collections::HashMap;
-
+pub mod indexing;
 use indexing::index_folder;
 use rusqlite::{params, Connection};
+use std::collections::HashMap;
 
 use self::indexing::FileOrDir;
 
@@ -35,7 +34,7 @@ fn add_entry(conn: &Connection, entry: &FileOrDir, id: &i32) {
         "INSERT INTO results(path, name, is_folder, size_bytes, accessed_time, modified_time, created_time, readonly, hidden, system, folder_size_bytes, num_files, num_subfolders, folderId) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)",
         params![entry.path, entry.name, entry.is_dir, entry.size, entry.accessed, entry.modified, entry.created, entry.read_only, entry.hidden, entry.system, entry.folder_size, entry.num_files, entry.num_folders, id],
     ) {
-        Ok(updated) => println!("Update successful! {}", updated),
+        Ok(_updated) => (),
         Err(err) => println!("Update Failed! {}", err),
     }
 }
@@ -119,7 +118,7 @@ pub fn remove_folder(folder: &String) {
     println!("The current index list is:\n{:#?}", folder_list);
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Folder {
     id: i32,
     folder: String,

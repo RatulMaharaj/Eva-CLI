@@ -1,64 +1,86 @@
-mod index;
+mod indexing;
 mod init;
 mod search;
 
-use index::{add_folder, ls_folders, remove_folder, update};
+use indexing::{add_folder, ls_folders, remove_folder, update};
 use init::create_tables;
 use search::search;
-use std::env::args;
+
+extern crate serde;
+extern crate serde_json;
+
+#[macro_use]
+extern crate serde_derive;
+
+use std::path::PathBuf;
+
+use clap::{Parser, Subcommand};
+
+/// Eva is an indexing and search tool
+#[derive(Debug, Parser)] // requires `derive` feature
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Debug, Subcommand)]
+enum Commands {
+    /// Add a folder to the index list
+    #[command(arg_required_else_help = true, alias = "a")]
+    Add {
+        /// Folder to add
+        #[arg(required = true)]
+        path: Vec<PathBuf>,
+    },
+    /// Remove a folder from the index list
+    #[command(arg_required_else_help = true, alias = "rm")]
+    Remove {
+        /// Folder to remove
+        #[arg(required = true)]
+        path: Vec<PathBuf>,
+    },
+    /// List all folders in the index list
+    #[command(alias = "l")]
+    Ls,
+    /// Update all indexes
+    #[command(alias = "up")]
+    Update,
+    /// Search indexes for a given term
+    #[command(
+        arg_required_else_help = true,
+        alias = "find",
+        alias = "s",
+        alias = "f"
+    )]
+    Search {
+        /// A string to search for
+        query: String,
+    },
+}
 
 fn main() {
+    let args = Cli::parse();
+
     // Create database and tables if they don't exist
     create_tables().ok();
 
-    // listen for command from CLI
-    let args: Vec<String> = args().collect();
-
-    if &args.len() == &1 {
-        println!("Please provide a valid action to be performed e.g. search, add or update.");
-    } else {
-        // grab first arg
-        let action = String::from(&args[1]);
-        let mut parameter: String = String::from("");
-
-        // grab second arg if provided
-        if &args.len() > &2 {
-            parameter = String::from(&args[2]);
+    match args.command {
+        Commands::Search { query } => {
+            let results = search(&query);
+            println!("{}\n", serde_json::to_string_pretty(&results).unwrap());
         }
-
-        match action.as_str() {
-            "search" => {
-                if &parameter == "" {
-                    println!("Please provide a search parameter.")
-                } else {
-                    search(&parameter);
-                }
-            }
-            "add" => {
-                if &parameter == "" {
-                    println!("Please provide a dir to add.")
-                } else {
-                    add_folder(&parameter);
-                }
-            }
-            "ls" => {
-                ls_folders();
-            }
-            "remove" => {
-                if &parameter == "" {
-                    println!("Please provide a dir to remove.")
-                } else {
-                    remove_folder(&parameter);
-                }
-            }
-            "update" => {
-                update();
-            }
-            _ => {
-                println!("Please provide a valid action.");
-            }
-        };
-    }
-
-    // println!("In file {}", parameter);
+        Commands::Add { path } => {
+            add_folder(&String::from(path[0].to_string_lossy()));
+        }
+        Commands::Ls => {
+            ls_folders();
+        }
+        Commands::Remove { path } => {
+            remove_folder(&String::from(path[0].to_string_lossy()));
+        }
+        Commands::Update => {
+            update();
+        }
+    };
 }
